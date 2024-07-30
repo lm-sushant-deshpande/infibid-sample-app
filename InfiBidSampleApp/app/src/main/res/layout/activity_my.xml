@@ -38,12 +38,12 @@
 
         <TextView
             android:id="@+id/playerDescription"
-            android:text="@string/app_name"
-            android:textAlignment="center"
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center_horizontal"
             android:paddingVertical="@dimen/font_size"
+            android:text="@string/app_name"
+            android:textAlignment="center"
             android:textSize="@dimen/font_size" />
     </FrameLayout>
 

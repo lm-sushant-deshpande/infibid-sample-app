@@ -72,6 +72,7 @@ public class VideoAdPlayerAdapter implements VideoAdPlayer {
                     mediaPlayer.start();
                     startAdTracking();
                 });
+
         videoPlayer.setOnErrorListener(
                 (mediaPlayer, errorType, extra) -> notifyImaSdkAboutAdError(errorType));
         videoPlayer.setOnCompletionListener(
