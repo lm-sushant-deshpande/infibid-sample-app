@@ -1,6 +1,7 @@
 package com.example.InfiBidSampleApp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -26,13 +27,11 @@ import java.util.Arrays;
 
 public class IMAPlayer extends AppCompatActivity {
 
+    public static final String EXTRA_VAST_TAG_URL = "com.example.InfiBidSampleApp.EXTRA_VAST_TAG_URL";
     private static final String LOGTAG = "IMABasicSample";
     private static final String SAMPLE_VIDEO_URL =
             "https://storage.googleapis.com/gvabox/media/samples/stock.mp4";
 
-    private static final String SAMPLE_VAST_TAG_URL =
-            "https://pubads.g.doubleclick.net/gampad/ads?iu=/22192417927/HB-Video-Test&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&sz=1920x1080%7C1080x1920%7C1080x1920%7C1920x1080&url=[referrer_url]&description_url=[description_url]&correlator=[timestamp]&cust_params=pb_sz%3D1920x1080";
-//            "https://pubads.g.doubleclick.net/gampad/ads?iu=/22192417927/HB-Video-Test&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&sz=1920x1080%7C1080x1920%7C1080x1920%7C1920x1080&url=[referrer_url]&description_url=[description_url]&correlator=[timestamp]&cust_params=pb_sz%3D1920x1080";
 
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
@@ -42,11 +41,15 @@ public class IMAPlayer extends AppCompatActivity {
     private MediaController mediaController;
     private View playButton;
     private VideoAdPlayerAdapter videoAdPlayerAdapter;
+    private String vastTagUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my); // Ensure this matches your layout
+
+        // Retrieve the VAST tag URL from the Intent
+        vastTagUrl = getIntent().getStringExtra(EXTRA_VAST_TAG_URL);
 
         mediaController = new MediaController(this);
         videoPlayer = findViewById(R.id.videoView);
@@ -117,7 +120,7 @@ public class IMAPlayer extends AppCompatActivity {
         playButton.setOnClickListener(
                 view -> {
                     videoPlayer.setVideoPath(SAMPLE_VIDEO_URL);
-                    requestAds(SAMPLE_VAST_TAG_URL);
+                    requestAds(vastTagUrl);
                     view.setVisibility(View.GONE);
                 });
         updateVideoDescriptionVisibility();

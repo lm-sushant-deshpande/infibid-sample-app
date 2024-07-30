@@ -59,12 +59,14 @@
             android:layout_weight="1"
             android:text="Publisher ID" />
 
-        <com.google.android.material.textfield.TextInputEditText
+        <EditText
             android:id="@+id/pub_val_id"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="NA" />
+            android:hint="Pub Id"
+            android:ems="10"
+            android:inputType="textPersonName" />
     </LinearLayout>
 
     <LinearLayout
@@ -80,12 +82,13 @@
             android:layout_weight="1"
             android:text="Ad Unit ID" />
 
-        <com.google.android.material.textfield.TextInputEditText
+        <EditText
             android:id="@+id/au_val_id"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="NA" />
+            android:ems="10"
+            android:hint="Ad Unit Id" />
     </LinearLayout>
 
     <!-- GAM Ad Unit ID Section -->
@@ -104,12 +107,13 @@
             android:layout_weight="1"
             android:text="GAM Ad Unit ID" />
 
-        <com.google.android.material.textfield.TextInputEditText
+        <EditText
             android:id="@+id/gam_adUnit_val_id"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="NA" />
+            android:ems="10"
+            android:hint="GAM Id" />
     </LinearLayout>
 
 
