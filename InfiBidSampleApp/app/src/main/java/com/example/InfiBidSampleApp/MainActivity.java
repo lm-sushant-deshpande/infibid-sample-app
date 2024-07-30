@@ -61,10 +61,12 @@ public class MainActivity extends AppCompatActivity {
                 // Use the default URL if the GAM Ad Unit ID is not provided
                 vastTagUrl = DEFAULT_VAST_TAG_URL;
                 Log.d("ad without Gam Id",vastTagUrl);
+                Log.d("Gam Id",gamAdUnitId);
             } else {
                 // Replace placeholder with actual GAM Ad Unit ID
                 vastTagUrl = DEFAULT_VAST_TAG_URL.replace("/22192417927", "/" + gamAdUnitId);
                 Log.d("ad with Gam Id",vastTagUrl);
+                Log.d("Gam Id",gamAdUnitId);
             }
 
             // Start the IMAPlayer activity with the constructed URL
