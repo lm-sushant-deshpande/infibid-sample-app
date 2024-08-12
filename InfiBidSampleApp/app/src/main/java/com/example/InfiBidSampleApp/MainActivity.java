@@ -1,6 +1,7 @@
 package com.example.InfiBidSampleApp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,11 +18,17 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private static final String DEFAULT_VAST_TAG_URL =
-            "https://pubads.g.doubleclick.net/gampad/ads?iu=/22192417927/HB-Video-Test&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&sz=1920x1080%7C1080x1920%7C1080x1920%7C1920x1080&url=[referrer_url]&description_url=[description_url]&correlator=[timestamp]&cust_params=pb_sz%3D1920x1080";
+    private static final String BASE_VAST_URL =
+            "http://sandbox.lemmatechnologies.com/infibid/v1/video/gam";
 
-    private static final String DEFAULT_URL_Aid_Pid =
-            "http://localhost:8000/openrtb2/video?test=1&tmax=3000&vw=1080&vh=1920&apid=abcd&apdom=%22test.prebid.com%22&apbndl=%22com.prebid.test%22&ip=%22192.168.1.2%22&vmimes=[%22video%2Fmp4%22%2C%20%22video%2Fog3%22]&wpid=178&waid=lemma-hb-adunit";
+    private static final String BASE_URL_AID_PID =
+            "http://sandbox.lemmatechnologies.com/infibid/v1/video/vast";
+
+    private static final String DEFAULT_VAST_TAG_PARAMS =
+            "?test=1&tmax=3000&vw=1920&vh=1080&apdom=%22test.prebid.com%22&apbndl=%22com.prebid.test%22&ip=%22192.168.1.2%22&vmimes=[%22video%2Fmp4%22%2C%20%22video%2Fog3%22]&wpid=178&waid=lemma-hb-adunit&gam_au=";
+
+    private static final String DEFAULT_URL_AID_PID_PARAMS =
+            "?test=1&tmax=3000&vw=1080&vh=1920&apid=abcd&apdom=%22test.prebid.com%22&apbndl=%22com.prebid.test%22&ip=%22192.168.1.2%22&vmimes=[%22video%2Fmp4%22%2C%20%22video%2Fog3%22]&wpid=178&waid=GAM_HB_demo";
 
     private String selectedServer = "No Ad Server"; // Default value
 
@@ -62,23 +69,47 @@ public class MainActivity extends AppCompatActivity {
             EditText pubIdEditText = findViewById(R.id.pub_val_id);
             EditText adUnitIdEditText = findViewById(R.id.au_val_id);
 
-
             String gamAdUnitId = gamAdUnitEditText.getText().toString().trim();
             String pubId = pubIdEditText.getText().toString().trim();
             String adUnitId = adUnitIdEditText.getText().toString().trim();
 
             // Construct the URL based on the selected ad server
             String url = "";
-            
+
             if ("No Ad Server".equals(selectedServer)) {
-                // Use the default URL_Aid_Pid if "No Ad Server" is selected
-                url = DEFAULT_URL_Aid_Pid.replace("178",pubId).replace("lemma-hb-adunit",adUnitId);
+                Uri.Builder builder = Uri.parse(BASE_URL_AID_PID).buildUpon()
+                        .appendQueryParameter("test", "1")
+                        .appendQueryParameter("tmax", "3000")
+                        .appendQueryParameter("vw", "1080")
+                        .appendQueryParameter("vh", "1920")
+                        .appendQueryParameter("apid", "abcd")
+                        .appendQueryParameter("apdom", "test.prebid.com")
+                        .appendQueryParameter("apbndl", "com.prebid.test")
+                        .appendQueryParameter("ip", "192.168.1.2")
+                        .appendQueryParameter("vmimes", "[\"video/mp4\",\"video/og3\"]")
+                        .appendQueryParameter("wpid", pubId)
+                        .appendQueryParameter("waid", adUnitId);
+
+                url = builder.build().toString();
                 Log.d("Ad with No Ad Server", url);
-            } else if("GAM Ad Server".equals(selectedServer)) {
-                // Construct VAST URL based on the presence of GAM Ad Unit ID
-                    // Replace placeholder with actual GAM Ad Unit ID
-                    url = DEFAULT_VAST_TAG_URL.replace("/22192417927", "/" + gamAdUnitId);
-                    Log.d("GAM Ad with gam id",url);
+
+            } else if ("GAM Ad Server".equals(selectedServer)) {
+                Uri.Builder builder = Uri.parse(BASE_VAST_URL).buildUpon()
+                        .appendQueryParameter("test", "1")
+                        .appendQueryParameter("tmax", "3000")
+                        .appendQueryParameter("vw", "1920")
+                        .appendQueryParameter("vh", "1080")
+                        .appendQueryParameter("apdom", "test.prebid.com")
+                        .appendQueryParameter("apbndl", "com.prebid.test")
+                        .appendQueryParameter("ip", "192.168.1.2")
+                        .appendQueryParameter("vmimes", "[\"video/mp4\",\"video/og3\"]")
+                        .appendQueryParameter("wpid", "178")
+                        .appendQueryParameter("waid", "lemma-hb-adunit")
+                        .appendQueryParameter("gam_au", gamAdUnitId);
+
+                url = builder.build().toString();
+                Log.d("GAM Ad with gam id", url);
+
             }
 
             // Start the IMAPlayer activity with the constructed URL
