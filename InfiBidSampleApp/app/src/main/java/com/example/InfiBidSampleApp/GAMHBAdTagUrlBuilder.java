@@ -64,28 +64,6 @@ public class GAMHBAdTagUrlBuilder {
         return builder.build().toString();
     }
 
-    private Map<String, String> convertLmTargetingToMap(TargetingResponseModel.LMTargeting targeting) {
-        Map<String, String> map = new HashMap<>();
-        // Manually add properties to the map
-        if (targeting.getLmHbBidder() != null) map.put("lm_hb_bidder", targeting.getLmHbBidder());
-        if (targeting.getLmHbBidderPubmatic() != null) map.put("lm_hb_bidder_pubmatic", targeting.getLmHbBidderPubmatic());
-        if (targeting.getLmHbCacheHost() != null) map.put("lm_hb_cache_host", targeting.getLmHbCacheHost());
-        if (targeting.getLmHbCacheHostPubmat() != null) map.put("lm_hb_cache_host_pubmat", targeting.getLmHbCacheHostPubmat());
-        if (targeting.getLmHbCacheId() != null) map.put("lm_hb_cache_id", targeting.getLmHbCacheId());
-        if (targeting.getLmHbCachePath() != null) map.put("lm_hb_cache_path", targeting.getLmHbCachePath());
-        if (targeting.getLmHbCachePathPubmat() != null) map.put("lm_hb_cache_path_pubmat", targeting.getLmHbCachePathPubmat());
-        if (targeting.getLmHbEnv() != null) map.put("lm_hb_env", targeting.getLmHbEnv());
-        if (targeting.getLmHbEnvPubmatic() != null) map.put("lm_hb_env_pubmatic", targeting.getLmHbEnvPubmatic());
-        if (targeting.getLmHbFormat() != null) map.put("lm_hb_format", targeting.getLmHbFormat());
-        if (targeting.getLmHbFormatPubmatic() != null) map.put("lm_hb_format_pubmatic", targeting.getLmHbFormatPubmatic());
-        if (targeting.getLmHbPb() != null) map.put("lm_hb_pb", targeting.getLmHbPb());
-        if (targeting.getLmHbPbPubmatic() != null) map.put("lm_hb_pb_pubmatic", targeting.getLmHbPbPubmatic());
-        if (targeting.getLmHbSize() != null) map.put("lm_hb_size", targeting.getLmHbSize());
-        if (targeting.getLmHbSizePubmatic() != null) map.put("lm_hb_size_pubmatic", targeting.getLmHbSizePubmatic());
-
-        return map;
-    }
-
     public void requestHBAdTargeting(TargetingCallback callback) {
         String vastUrl = "http://sandbox.lemmatechnologies.com/infibid/v1/video/targeting";
         LemmaVastAdTagUrlBuilder urlBuilder = new LemmaVastAdTagUrlBuilder(this.context, vastUrl, pubId, adUnitId);

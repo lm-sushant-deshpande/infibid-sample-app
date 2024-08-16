@@ -24,6 +24,8 @@ public class TargetingResponseParser {
 
             // Convert JSON object directly to map and generate query parameters
             Map<String, String> targetingMap = convertJsonObjectToMap(lmTargetingJson);
+            Log.d(TAG, "Generated Map: " + targetingMap);
+
             String queryParams = convertMapToQueryParams(targetingMap);
 
             Log.d(TAG, "Generated Query Params: " + queryParams);
