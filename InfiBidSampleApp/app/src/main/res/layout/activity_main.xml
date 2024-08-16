@@ -38,10 +38,11 @@
 
         <Spinner
             android:id="@+id/server_spinner"
-            android:layout_width="0dp"
+            android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1.05"
             android:padding="8dp"
+            android:ems="10"
             android:entries="@array/ad_server_options" />
 
     </LinearLayout>
@@ -65,8 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="Pub Id"
-            android:ems="10"
-            android:inputType="textPersonName" />
+            android:ems="10" />
     </LinearLayout>
 
     <LinearLayout
