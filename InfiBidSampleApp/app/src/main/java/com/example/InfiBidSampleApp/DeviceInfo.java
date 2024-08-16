@@ -2,6 +2,8 @@ package com.example.InfiBidSampleApp;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.media.MediaCodecInfo;
@@ -90,6 +92,17 @@ public class DeviceInfo {
             // Handle exception if necessary
         }
         return "";
+    }
+
+    String getAppBundle() {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.packageName; // This is the app's bundle name
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "unknown";
+        }
     }
 
     public static List<String> getSupportedMimeTypes() {

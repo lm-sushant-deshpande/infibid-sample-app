@@ -17,6 +17,7 @@ public class TargetingResponseParser {
 
     private final Gson gson = new Gson();
 
+    // Method to parse JSON response and generate query parameters
     public String parseAndGenerateQueryParams(String jsonResponse) throws Exception {
         try {
             JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
@@ -36,6 +37,7 @@ public class TargetingResponseParser {
         }
     }
 
+    // Method to convert JSON object to Map
     private Map<String, String> convertJsonObjectToMap(JsonObject jsonObject) {
         Map<String, String> map = new HashMap<>();
         for (Map.Entry<String, com.google.gson.JsonElement> entry : jsonObject.entrySet()) {
@@ -59,7 +61,6 @@ public class TargetingResponseParser {
                 Log.e(TAG, "Encoding error: " + e.getMessage());
             }
         }
-        Log.d(TAG, "Generated Query Params: " + queryParams.toString());
         return queryParams.toString();
     }
 

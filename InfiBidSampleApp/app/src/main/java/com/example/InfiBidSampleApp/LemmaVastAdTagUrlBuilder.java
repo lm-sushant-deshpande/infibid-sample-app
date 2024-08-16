@@ -26,6 +26,8 @@ public class LemmaVastAdTagUrlBuilder {
         List<String> mimesType = DeviceInfo.getSupportedMimeTypes();
         int screenWidth = deviceInfo.getScreenWidth();
         int screenHeight = deviceInfo.getScreenHeight();
+        String appBundle = deviceInfo.getAppBundle();
+
 
         // Construct the URL based on your requirements
         Uri.Builder builder = Uri.parse(this.url).buildUpon()
@@ -34,8 +36,8 @@ public class LemmaVastAdTagUrlBuilder {
                 .appendQueryParameter("vw", String.valueOf(screenWidth))
                 .appendQueryParameter("vh", String.valueOf(screenHeight))
                 .appendQueryParameter("apid", "abcd")
-                .appendQueryParameter("apdom", "test.prebid.com")
-                .appendQueryParameter("apbndl", "com.prebid.test")
+                .appendQueryParameter("apdom", appBundle)
+                .appendQueryParameter("apbndl", appBundle)
                 .appendQueryParameter("ip", ipAddress)
                 .appendQueryParameter("vmimes", mimesType.toString())
                 .appendQueryParameter("wpid", pubId)

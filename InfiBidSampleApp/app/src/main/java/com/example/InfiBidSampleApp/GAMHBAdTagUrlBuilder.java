@@ -36,23 +36,10 @@ public class GAMHBAdTagUrlBuilder {
 
     public String getUrl(String custParam) {
         DeviceInfo deviceInfo = new DeviceInfo(context);
-        String ipAddress = DeviceInfo.getIPAddress(true);
-        List<String> mimesType = DeviceInfo.getSupportedMimeTypes();
         int screenWidth = deviceInfo.getScreenWidth();
         int screenHeight = deviceInfo.getScreenHeight();
 
         Uri.Builder builder = Uri.parse(BASE_GAM_URL).buildUpon()
-//                .appendQueryParameter("test", "1")
-//                .appendQueryParameter("tmax", "3000")
-//                .appendQueryParameter("vw", String.valueOf(screenHeight))
-//                .appendQueryParameter("vh", String.valueOf(screenWidth))
-//                .appendQueryParameter("apdom", "test.prebid.com")
-//                .appendQueryParameter("apbndl", "com.prebid.test")
-//                .appendQueryParameter("ip", ipAddress)
-//                .appendQueryParameter("vmimes", mimesType.toString())
-//                .appendQueryParameter("wpid", pubId)
-//                .appendQueryParameter("waid", adUnitId)
-//                .appendQueryParameter("gam_au", gamAdUnitId)
                 .appendQueryParameter("sz", screenHeight + "x" + screenWidth)
                 .appendQueryParameter("iu", gamAdUnitId)
                 .appendQueryParameter("env", "vp")
@@ -85,7 +72,6 @@ public class GAMHBAdTagUrlBuilder {
 
                         try {
                             queryParams = parser.parseAndGenerateQueryParams(responseData);
-                            Log.d(TAG, "Generated Query Params: " + queryParams);
 
                             // Call the callback with the generated query parameters
                             callback.onSuccess(queryParams);
