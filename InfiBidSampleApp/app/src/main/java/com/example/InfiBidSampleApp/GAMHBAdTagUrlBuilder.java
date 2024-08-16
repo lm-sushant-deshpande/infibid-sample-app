@@ -16,7 +16,7 @@ import okhttp3.Response;
 public class GAMHBAdTagUrlBuilder {
 
     private static final String BASE_GAM_URL =
-            "http://sandbox.lemmatechnologies.com/infibid/v1/video/gam";
+            "https://pubads.g.doubleclick.net/gampad/ads";
 
     private static final String TAG = "GAMHBAdTagUrlBuilder";
 
@@ -52,16 +52,14 @@ public class GAMHBAdTagUrlBuilder {
 //                .appendQueryParameter("vmimes", mimesType.toString())
 //                .appendQueryParameter("wpid", pubId)
 //                .appendQueryParameter("waid", adUnitId)
-                .appendQueryParameter("sz", screenHeight+"x"+screenWidth)
-                .appendQueryParameter("iu", gamAdUnitId) // Example Ad Unit ID
-                .appendQueryParameter("gdfp_req", "1")
-                .appendQueryParameter("unviewed_position_start", "1")
-                .appendQueryParameter("correlator", String.valueOf(System.currentTimeMillis())) // Use current timestamp
-//                .appendQueryParameter("cust_params", "lm_hb_size=1920x1080") // Static part of cust_params
-//                .appendQueryParameter("wpid", pubId)
-//                .appendQueryParameter("waid", adUnitId)
 //                .appendQueryParameter("gam_au", gamAdUnitId)
-                .appendQueryParameter("cust_param", custParam);
+                .appendQueryParameter("sz", screenHeight + "x" + screenWidth)
+                .appendQueryParameter("iu", gamAdUnitId)
+                .appendQueryParameter("env", "vp")
+                .appendQueryParameter("gdfp_req", "1")
+                .appendQueryParameter("output", "vast")
+                .appendQueryParameter("correlator", String.valueOf(System.currentTimeMillis())) // Current time for correlator
+                .appendQueryParameter("cust_params", custParam);
 
         return builder.build().toString();
     }
