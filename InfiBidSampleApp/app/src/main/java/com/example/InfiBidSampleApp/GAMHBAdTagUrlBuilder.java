@@ -77,7 +77,7 @@ public class GAMHBAdTagUrlBuilder {
      */
     public void requestHBAdTargeting(TargetingCallback callback) {
         // Hardcoded VAST URL for sandbox testing purposes.
-        String vastUrl = "http://sandbox.lemmatechnologies.com/infibid/v1/video/targeting";
+        String vastUrl = "https://sandbox.lemmatechnologies.com/infibid/v1/video/targeting";
         // Use a LemmaVastAdTagUrlBuilder to construct the targeting URL.
         LemmaVastAdTagUrlBuilder urlBuilder = new LemmaVastAdTagUrlBuilder(this.context, vastUrl, pubId, adUnitId);
         String targetingUrl = urlBuilder.getUrl();
