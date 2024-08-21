@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 // Build the VAST ad tag URL using LemmaVastAdTagUrlBuilder.
                 String vastUrl = "https://lemmadigital.com/infibid/v1/video/vast";
                 LemmaVastAdTagUrlBuilder urlBuilder = new LemmaVastAdTagUrlBuilder(this, vastUrl, pubId, adUnitId);
-                String url = urlBuilder.getUrl();
+                String url = urlBuilder.build();
                 Log.d(TAG, "Ad with No Ad Server URL: " + url);
 
                 // Start the IMAPlayer activity to play the video ad.
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 // Build the GAM ad tag URL using GAMHBAdTagUrlBuilder and request targeting data.
                 GAMHBAdTagUrlBuilder urlBuilder = new GAMHBAdTagUrlBuilder(this, pubId, adUnitId, gamAdUnitId);
 
-                urlBuilder.requestHBAdTargeting(new GAMHBAdTagUrlBuilder.TargetingCallback() {
+                urlBuilder.build(new GAMHBAdTagUrlBuilder.TargetingCallback() {
                     @Override
                     public void onSuccess(String custParam) {
                         // Build the URL with custom parameters and start the IMAPlayer activity.
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Exception e) {
+                    public void onFailure(Error e) {
                         // Log the error and handle it, e.g., show a message to the user.
                         Log.e(TAG, "Failed to fetch targeting data", e);
                         startIMAPlayerActivity("");

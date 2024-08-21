@@ -38,7 +38,7 @@ public class LemmaVastAdTagUrlBuilder {
      *
      * @return The complete VAST ad tag URL.
      */
-    public String getUrl() {
+    public String build() {
         // Create a DeviceInfo object to retrieve device-specific information.
         DeviceInfo deviceInfo = new DeviceInfo(context);
         // Retrieve the device's IP address.

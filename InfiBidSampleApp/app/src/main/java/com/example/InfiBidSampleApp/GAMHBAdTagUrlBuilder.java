@@ -77,12 +77,12 @@ public class GAMHBAdTagUrlBuilder {
      *
      * @param callback A callback to handle the success or failure of the targeting request.
      */
-    public void requestHBAdTargeting(TargetingCallback callback) {
+    public void build(TargetingCallback callback) {
         // Hardcoded VAST URL for sandbox testing purposes.
         String vastUrl = "https://lemmadigital.com/infibid/v1/video/targeting";
         // Use a LemmaVastAdTagUrlBuilder to construct the targeting URL.
         LemmaVastAdTagUrlBuilder urlBuilder = new LemmaVastAdTagUrlBuilder(this.context, vastUrl, pubId, adUnitId);
-        String targetingUrl = urlBuilder.getUrl();
+        String targetingUrl = urlBuilder.build();
 
         // Create an HTTP request using the targeting URL.
         Request request = new Request.Builder()
@@ -95,7 +95,7 @@ public class GAMHBAdTagUrlBuilder {
             public void onFailure(Call call, IOException e) {
                 // Log the error and invoke the failure callback if the request fails.
                 Log.e(TAG, "Error fetching targeting data", e);
-                callback.onFailure(e);
+                callback.onFailure(new Error(e)); // Wrap IOException in an Error
             }
 
             @Override
@@ -116,12 +116,12 @@ public class GAMHBAdTagUrlBuilder {
                     } catch (Exception e) {
                         // Handle any errors that occur during parsing.
                         Log.e(TAG, "Error parsing targeting response", e);
-                        callback.onFailure(e); // Invoke failure callback with the exception
+                        callback.onFailure(new Error(e)); // Wrap Exception in an Error
                     }
                 } else {
                     // Log an error if the request failed with a non-successful status code.
                     Log.e(TAG, "Request failed with code: " + response.code() + " and message: " + response.message());
-                    callback.onFailure(new IOException("Request failed"));
+                    callback.onFailure(new Error("Request failed")); // Wrap String message in an Error
                 }
             }
         });
@@ -143,6 +143,6 @@ public class GAMHBAdTagUrlBuilder {
          *
          * @param e The exception that caused the failure.
          */
-        void onFailure(Exception e);
+        void onFailure(Error e);
     }
 }
