@@ -52,7 +52,7 @@ public class GAMHBAdTagUrlBuilder {
      * @param custParam Custom parameters to be appended to the URL.
      * @return The full GAM ad tag URL.
      */
-    public String getUrl(String custParam) {
+    private String generateGAMUrl(String custParam) {
         // Create a DeviceInfo object to retrieve device screen dimensions.
         DeviceInfo deviceInfo = new DeviceInfo(context);
         int screenWidth = deviceInfo.getScreenWidth();
@@ -65,9 +65,10 @@ public class GAMHBAdTagUrlBuilder {
                 .appendQueryParameter("env", "vp")  // Specify the environment (video player)
                 .appendQueryParameter("gdfp_req", "1")  // Specify Google DoubleClick for Publishers request
                 .appendQueryParameter("output", "vast")  // Specify VAST output format
-                .appendQueryParameter("correlator", String.valueOf(System.currentTimeMillis())) // Use current time as correlator
-                .appendQueryParameter("cust_params", custParam);  // Append custom parameters
-
+                .appendQueryParameter("correlator", String.valueOf(System.currentTimeMillis())); // Use current time as correlator
+                if (custParam != null) {
+                    builder.appendQueryParameter("cust_params", custParam);  // Append custom parameters
+                }
         return builder.build().toString();
     }
 
@@ -77,7 +78,7 @@ public class GAMHBAdTagUrlBuilder {
      *
      * @param callback A callback to handle the success or failure of the targeting request.
      */
-    public void build(TargetingCallback callback) {
+    public void build(BuildListener callback) {
         // Hardcoded VAST URL for sandbox testing purposes.
         String vastUrl = "https://lemmadigital.com/infibid/v1/video/targeting";
         // Use a LemmaVastAdTagUrlBuilder to construct the targeting URL.
@@ -95,54 +96,55 @@ public class GAMHBAdTagUrlBuilder {
             public void onFailure(Call call, IOException e) {
                 // Log the error and invoke the failure callback if the request fails.
                 Log.e(TAG, "Error fetching targeting data", e);
-                callback.onFailure(new Error(e)); // Wrap IOException in an Error
+                onSuccessResponse(callback, null);
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    // If the response is successful, parse the response body.
-                    String responseData = response.body().string();
-                    Log.d(TAG, "Targeting Response: " + responseData);
+            public void onResponse(Call call, Response response) {
+                try {
+                    if (response.isSuccessful()) {
+                        // If the response is successful, parse the response body.
+                        String responseData = response.body().string();
+                        Log.d(TAG, "Targeting Response: " + responseData);
 
-                    // Use a parser to extract and generate custom parameters from the response.
-                    TargetingResponseParser parser = new TargetingResponseParser();
-                    String queryParams;
+                        // Use a parser to extract and generate custom parameters from the response.
+                        TargetingResponseParser parser = new TargetingResponseParser();
+                        String queryParams;
 
-                    try {
-                        // Parse the response and generate query parameters.
-                        queryParams = parser.parseAndGenerateQueryParams(responseData);
-                        callback.onSuccess(queryParams); // Invoke success callback with the parameters
-                    } catch (Exception e) {
-                        // Handle any errors that occur during parsing.
-                        Log.e(TAG, "Error parsing targeting response", e);
-                        callback.onFailure(new Error(e)); // Wrap Exception in an Error
+
+                            // Parse the response and generate query parameters.
+                            queryParams = parser.parseAndGenerateQueryParams(responseData);
+                        onSuccessResponse(callback, queryParams); // Invoke success callback with the parameters
+
+                    } else {
+                        // Log an error if the request failed with a non-successful status code.
+                        Log.e(TAG, "Request failed with code: " + response.code() + " and message: " + response.message());
+                        onSuccessResponse(callback, null);
                     }
-                } else {
-                    // Log an error if the request failed with a non-successful status code.
-                    Log.e(TAG, "Request failed with code: " + response.code() + " and message: " + response.message());
-                    callback.onFailure(new Error("Request failed")); // Wrap String message in an Error
+                } catch (Exception e) {
+                    // Handle any errors that occur during parsing.
+                    Log.e(TAG, "Error parsing targeting response", e);
+                    onSuccessResponse(callback, null);
                 }
             }
         });
     }
 
+    private void onSuccessResponse(BuildListener callback, String customParams) {
+        if (callback != null) {
+            callback.onSuccess(generateGAMUrl(customParams));
+        }
+    }
+
     /**
-     * Interface definition for a callback to handle the results of a targeting request.
+     * Interface definition for a callback to handle the results of GAM vast ad url.
      */
-    public interface TargetingCallback {
+    public interface BuildListener {
         /**
          * Called when the targeting request is successful.
          *
-         * @param custParam The custom parameters extracted from the targeting response.
+         * @param url The GAM vast ad url
          */
-        void onSuccess(String custParam);
-
-        /**
-         * Called when the targeting request fails.
-         *
-         * @param e The exception that caused the failure.
-         */
-        void onFailure(Error e);
+        void onSuccess(String url);
     }
 }

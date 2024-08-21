@@ -93,20 +93,12 @@ public class MainActivity extends AppCompatActivity {
                 // Build the GAM ad tag URL using GAMHBAdTagUrlBuilder and request targeting data.
                 GAMHBAdTagUrlBuilder urlBuilder = new GAMHBAdTagUrlBuilder(this, pubId, adUnitId, gamAdUnitId);
 
-                urlBuilder.build(new GAMHBAdTagUrlBuilder.TargetingCallback() {
+                urlBuilder.build(new GAMHBAdTagUrlBuilder.BuildListener() {
                     @Override
-                    public void onSuccess(String custParam) {
+                    public void onSuccess(String url) {
                         // Build the URL with custom parameters and start the IMAPlayer activity.
-                        String url = urlBuilder.getUrl(custParam);
                         Log.d(TAG, "Ad with GAM Ad Server URL: " + url);
                         startIMAPlayerActivity(url);
-                    }
-
-                    @Override
-                    public void onFailure(Error e) {
-                        // Log the error and handle it, e.g., show a message to the user.
-                        Log.e(TAG, "Failed to fetch targeting data", e);
-                        startIMAPlayerActivity("");
                     }
                 });
 
