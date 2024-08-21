@@ -13,35 +13,45 @@ import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * The {@code MainActivity} class is the main entry point of the app, allowing users to select an ad server,
+ * input required ad unit details, and play a video ad using the selected server's URL.
+ */
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity"; // Tag for logging purposes.
 
-    private static final String DEFAULT_VAST_TAG_URL =
-            "https://pubads.g.doubleclick.net/gampad/ads?iu=/22192417927/HB-Video-Test&gdfp_req=1&unviewed_position_start=1&output=vast&env=vp&impl=s&sz=1920x1080%7C1080x1920%7C1080x1920%7C1920x1080&url=[referrer_url]&description_url=[description_url]&correlator=[timestamp]&cust_params=pb_sz%3D1920x1080";
+    private String selectedServer = "No Ad Server"; // Default value for the selected ad server.
 
-    private static final String DEFAULT_URL_Aid_Pid =
-            "http://localhost:8000/openrtb2/video?test=1&tmax=3000&vw=1080&vh=1920&apid=abcd&apdom=%22test.prebid.com%22&apbndl=%22com.prebid.test%22&ip=%22192.168.1.2%22&vmimes=[%22video%2Fmp4%22%2C%20%22video%2Fog3%22]&wpid=178&waid=lemma-hb-adunit";
-
-    private String selectedServer = "No Ad Server"; // Default value
-
+    /**
+     * Called when the activity is first created.
+     * Initializes the UI components and sets up listeners for the ad server selection spinner and the play video button.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down, this contains the data it most recently supplied in {@link #onSaveInstanceState(Bundle)}.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Find and initialize the spinner for selecting ad servers.
         Spinner adServerSpinner = findViewById(R.id.server_spinner);
+        // Find the layout that will be shown/hidden based on the selected ad server.
         LinearLayout gamAdUnitLayout = findViewById(R.id.gam_ad_unit_layout);
 
+        // Set up the spinner with ad server options from a string array resource.
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.ad_server_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         adServerSpinner.setAdapter(adapter);
 
+        // Listen for user selection on the ad server spinner.
         adServerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Update the selected server based on user choice.
                 selectedServer = (String) parent.getItemAtPosition(position);
+                // Show or hide the GAM ad unit layout based on the selected server.
                 if ("GAM Ad Server".equals(selectedServer)) {
                     gamAdUnitLayout.setVisibility(View.VISIBLE);
                 } else {
@@ -51,40 +61,60 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
+                // No action required when nothing is selected.
             }
         });
 
+        // Find and initialize the play video button.
         Button playVideoButton = findViewById(R.id.Ad_play_button);
+        // Set up an onClick listener for the button to handle ad playback.
         playVideoButton.setOnClickListener(v -> {
-            // Get the value from TextInputEditText every time the button is clicked
+            // Retrieve input values from EditText fields.
             EditText gamAdUnitEditText = findViewById(R.id.gam_adUnit_val_id);
             EditText pubIdEditText = findViewById(R.id.pub_val_id);
             EditText adUnitIdEditText = findViewById(R.id.au_val_id);
-
 
             String gamAdUnitId = gamAdUnitEditText.getText().toString().trim();
             String pubId = pubIdEditText.getText().toString().trim();
             String adUnitId = adUnitIdEditText.getText().toString().trim();
 
-            // Construct the URL based on the selected ad server
-            String url = "";
-            
+            // Handle ad request based on the selected ad server.
             if ("No Ad Server".equals(selectedServer)) {
-                // Use the default URL_Aid_Pid if "No Ad Server" is selected
-                url = DEFAULT_URL_Aid_Pid.replace("178",pubId).replace("lemma-hb-adunit",adUnitId);
-                Log.d("Ad with No Ad Server", url);
-            } else if("GAM Ad Server".equals(selectedServer)) {
-                // Construct VAST URL based on the presence of GAM Ad Unit ID
-                    // Replace placeholder with actual GAM Ad Unit ID
-                    url = DEFAULT_VAST_TAG_URL.replace("/22192417927", "/" + gamAdUnitId);
-                    Log.d("GAM Ad with gam id",url);
-            }
+                // Build the VAST ad tag URL using LemmaVastAdTagUrlBuilder.
+                String vastUrl = "https://lemmadigital.com/infibid/v1/video/vast";
+                LemmaVastAdTagUrlBuilder urlBuilder = new LemmaVastAdTagUrlBuilder(this, vastUrl, pubId, adUnitId);
+                String url = urlBuilder.build();
+                Log.d(TAG, "Ad with No Ad Server URL: " + url);
 
-            // Start the IMAPlayer activity with the constructed URL
-            Intent intent = new Intent(MainActivity.this, IMAPlayer.class);
-            intent.putExtra(IMAPlayer.EXTRA_VAST_TAG_URL, url);
-            startActivity(intent);
+                // Start the IMAPlayer activity to play the video ad.
+                startIMAPlayerActivity(url);
+
+            } else if ("GAM Ad Server".equals(selectedServer)) {
+                // Build the GAM ad tag URL using GAMHBAdTagUrlBuilder and request targeting data.
+                GAMHBAdTagUrlBuilder urlBuilder = new GAMHBAdTagUrlBuilder(this, pubId, adUnitId, gamAdUnitId);
+
+                urlBuilder.build(new GAMHBAdTagUrlBuilder.BuildListener() {
+                    @Override
+                    public void onSuccess(String url) {
+                        // Build the URL with custom parameters and start the IMAPlayer activity.
+                        Log.d(TAG, "Ad with GAM Ad Server URL: " + url);
+                        startIMAPlayerActivity(url);
+                    }
+                });
+
+            }
         });
+    }
+
+    /**
+     * Starts the {@link IMAPlayer} activity to play the video ad using the provided VAST tag URL.
+     *
+     * @param url The VAST tag URL to be used by the IMAPlayer.
+     */
+    private void startIMAPlayerActivity(String url) {
+        // Create an intent to start the IMAPlayer activity and pass the VAST tag URL.
+        Intent intent = new Intent(MainActivity.this, IMAPlayer.class);
+        intent.putExtra(IMAPlayer.EXTRA_VAST_TAG_URL, url);
+        startActivity(intent); // Start the IMAPlayer activity.
     }
 }

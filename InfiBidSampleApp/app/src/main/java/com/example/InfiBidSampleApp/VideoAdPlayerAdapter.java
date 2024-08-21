@@ -30,6 +30,7 @@ public class VideoAdPlayerAdapter implements VideoAdPlayer {
     private int savedAdPosition;
     private AdMediaInfo loadedAdMediaInfo;
 
+
     public VideoAdPlayerAdapter(VideoView videoPlayer, AudioManager audioManager) {
         this.videoPlayer = videoPlayer;
         this.videoPlayer.setOnCompletionListener(
