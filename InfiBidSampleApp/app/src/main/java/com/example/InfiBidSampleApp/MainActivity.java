@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             // Handle ad request based on the selected ad server.
             if ("No Ad Server".equals(selectedServer)) {
                 // Build the VAST ad tag URL using LemmaVastAdTagUrlBuilder.
-                String vastUrl = "http://sandbox.lemmatechnologies.com/infibid/v1/video/vast";
+                String vastUrl = "https://lemmadigital.com/infibid/v1/video/vast";
                 LemmaVastAdTagUrlBuilder urlBuilder = new LemmaVastAdTagUrlBuilder(this, vastUrl, pubId, adUnitId);
                 String url = urlBuilder.getUrl();
                 Log.d(TAG, "Ad with No Ad Server URL: " + url);
@@ -106,13 +106,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailure(Exception e) {
                         // Log the error and handle it, e.g., show a message to the user.
                         Log.e(TAG, "Failed to fetch targeting data", e);
+                        startIMAPlayerActivity("");
                     }
                 });
 
-            } else {
-                // Handle case where no ad server is selected or an unknown server is chosen.
-                String url = "";
-                startIMAPlayerActivity(url);
             }
         });
     }

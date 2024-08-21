@@ -34,24 +34,31 @@ public class TargetingResponseParser {
         try {
             // Parse the JSON response string into a JsonObject.
             JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-            // Get the 'lm_targeting' JSON object from the parsed response.
-            JsonObject lmTargetingJson = jsonObject.getAsJsonObject("lm_targeting");
 
-            // Convert JSON object to a map of string key-value pairs.
-            Map<String, String> targetingMap = convertJsonObjectToMap(lmTargetingJson);
-            Log.d(TAG, "Generated Map: " + targetingMap);
+            // Get the 'targeting' JSON array from the parsed response.
+            if (jsonObject.has("targeting")) {
+                // Get the first object in the 'targeting' array.
+                JsonObject lmTargetingJson = jsonObject.getAsJsonArray("targeting").get(0).getAsJsonObject();
 
-            // Convert the map to URL query parameters.
-            String queryParams = convertMapToQueryParams(targetingMap);
+                // Convert JSON object to a map of string key-value pairs.
+                Map<String, String> targetingMap = convertJsonObjectToMap(lmTargetingJson);
+                Log.d(TAG, "Generated Map: " + targetingMap);
 
-            Log.d(TAG, "Generated Query Params: " + queryParams);
-            return queryParams;
+                // Convert the map to URL query parameters.
+                String queryParams = convertMapToQueryParams(targetingMap);
+
+                Log.d(TAG, "Generated Query Params: " + queryParams);
+                return queryParams;
+            } else {
+                throw new Exception("'targeting' array is missing in the JSON response.");
+            }
 
         } catch (JsonSyntaxException e) {
             // Handle JSON parsing errors.
             throw new Exception("Failed to parse JSON response: " + e.getMessage(), e);
         }
     }
+
 
 
 

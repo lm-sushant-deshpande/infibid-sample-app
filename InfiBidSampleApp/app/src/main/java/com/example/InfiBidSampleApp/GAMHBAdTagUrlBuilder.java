@@ -6,6 +6,8 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -77,51 +79,52 @@ public class GAMHBAdTagUrlBuilder {
      */
     public void requestHBAdTargeting(TargetingCallback callback) {
         // Hardcoded VAST URL for sandbox testing purposes.
-        String vastUrl = "https://sandbox.lemmatechnologies.com/infibid/v1/video/targeting";
+        String vastUrl = "https://lemmadigital.com/infibid/v1/video/targeting";
         // Use a LemmaVastAdTagUrlBuilder to construct the targeting URL.
         LemmaVastAdTagUrlBuilder urlBuilder = new LemmaVastAdTagUrlBuilder(this.context, vastUrl, pubId, adUnitId);
         String targetingUrl = urlBuilder.getUrl();
 
-        // Start a new thread to perform the network request asynchronously.
-        new Thread(() -> {
-            try {
-                // Create an HTTP request using the targeting URL.
-                Request request = new Request.Builder()
-                        .url(targetingUrl)
-                        .build();
+        // Create an HTTP request using the targeting URL.
+        Request request = new Request.Builder()
+                .url(targetingUrl)
+                .build();
 
-                // Execute the HTTP request and obtain the response.
-                try (Response response = httpClient.newCall(request).execute()) {
-                    if (response.isSuccessful()) {
-                        // If the response is successful, parse the response body.
-                        String responseData = response.body().string();
-                        Log.d(TAG, "Targeting Response: " + responseData);
-
-                        // Use a parser to extract and generate custom parameters from the response.
-                        TargetingResponseParser parser = new TargetingResponseParser();
-                        String queryParams;
-
-                        try {
-                            // Parse the response and generate query parameters.
-                            queryParams = parser.parseAndGenerateQueryParams(responseData);
-                            callback.onSuccess(queryParams); // Invoke success callback with the parameters
-                        } catch (Exception e) {
-                            // Handle any errors that occur during parsing.
-                            Log.e(TAG, "Error parsing targeting response", e);
-                            callback.onFailure(e); // Invoke failure callback with the exception
-                        }
-                    } else {
-                        // Log an error if the request failed with a non-successful status code.
-                        Log.e(TAG, "Request failed with code: " + response.code() + " and message: " + response.message());
-                        callback.onFailure(new IOException("Request failed"));
-                    }
-                }
-            } catch (IOException e) {
-                // Handle any IO exceptions that occur during the request.
+        // Perform the network request asynchronously using OkHttp's enqueue method.
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                // Log the error and invoke the failure callback if the request fails.
                 Log.e(TAG, "Error fetching targeting data", e);
-                callback.onFailure(e); // Invoke failure callback with the exception
+                callback.onFailure(e);
             }
-        }).start(); // Start the thread.
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    // If the response is successful, parse the response body.
+                    String responseData = response.body().string();
+                    Log.d(TAG, "Targeting Response: " + responseData);
+
+                    // Use a parser to extract and generate custom parameters from the response.
+                    TargetingResponseParser parser = new TargetingResponseParser();
+                    String queryParams;
+
+                    try {
+                        // Parse the response and generate query parameters.
+                        queryParams = parser.parseAndGenerateQueryParams(responseData);
+                        callback.onSuccess(queryParams); // Invoke success callback with the parameters
+                    } catch (Exception e) {
+                        // Handle any errors that occur during parsing.
+                        Log.e(TAG, "Error parsing targeting response", e);
+                        callback.onFailure(e); // Invoke failure callback with the exception
+                    }
+                } else {
+                    // Log an error if the request failed with a non-successful status code.
+                    Log.e(TAG, "Request failed with code: " + response.code() + " and message: " + response.message());
+                    callback.onFailure(new IOException("Request failed"));
+                }
+            }
+        });
     }
 
     /**
